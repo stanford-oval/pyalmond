@@ -30,6 +30,9 @@
 
 from setuptools import setup
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name="pyalmond",
     version="0.0.1",
@@ -38,6 +41,8 @@ setup(
     author="Giovanni Campagna",
     author_email="gcampagn@cs.stanford.edu",
     description="Python module to talk to the Web Almond API.",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     packages=["pyalmond"],
     platforms="any",
     install_requires=["aiohttp"],
