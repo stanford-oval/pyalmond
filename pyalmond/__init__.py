@@ -53,10 +53,18 @@ class WebAlmondAPI:
         """Initialize the API."""
         self.auth = auth
 
-    async def async_converse_text(self, text: str) -> dict:
-        """Talk to converse endpoint."""
+    async def async_converse_text(self, text: str, conversation_id : str = None) -> dict:
+        """Send a text message to Almond, and return Almond's reply."""
         resp = await self.auth.post(
-            "/api/converse", json={"command": {"type": "command", "text": text}}
+            "/api/converse", json={"command": {"type": "command", "text": text}, "conversationId": conversation_id}
+        )
+
+        return await resp.json()
+
+    async def async_converse_thingtalk(self, code: str, conversation_id : str = None) -> dict:
+        """Send a program to Almond to be executed, and return Almond's reply."""
+        resp = await self.auth.post(
+            "/api/converse", json={"command": {"type": "tt", "code": code}, "conversationId": conversation_id}
         )
 
         return await resp.json()
