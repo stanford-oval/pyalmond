@@ -9,7 +9,7 @@ services:
 install:
 - pip install -r requirements.txt
 script:
-- docker run -p 3000:3000 stanfordoval/almond-server:latest-portable & sleep 30
+- ./travis/bootstrap.sh
 - flake8
 - pytest --cov pyalmond
 after_success:
