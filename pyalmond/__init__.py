@@ -61,7 +61,7 @@ class AbstractAlmondAuth(ABC):
             method,
             f"{self.host}{url}",
             **kwargs,
-            headers=request_headers,
+            headers=headers,
         )
 
 
