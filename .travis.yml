@@ -5,10 +5,12 @@ language: python
 python:
 - '3.6'
 services:
-  - docker
+- docker
 install:
 - pip install -r requirements.txt
 script:
 - docker run -p 3000:3000 -d stanfordoval/almond-server:latest-portable
 - flake8
-- pytest
+- pytest --cov pyalmond
+after_success:
+- coveralls
