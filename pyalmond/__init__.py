@@ -31,19 +31,59 @@
 """Python package to communicate with Almond."""
 from abc import ABC, abstractmethod
 
-from aiohttp import ClientResponse
+from aiohttp import ClientResponse, ClientSession
 
 
 class AbstractAlmondAuth(ABC):
     """Base class to handle auth."""
 
-    def __init__(self, host: str):
+    def __init__(self, host: str, websession: ClientSession):
         """Initialize the auth."""
         self.host = host
+        self._websession = websession
 
     @abstractmethod
-    async def post(self, url, **kwargs) -> ClientResponse:
-        """Make a post request."""
+    async def async_get_auth_headers(self) -> dict:
+        """Get the request auth headers."""
+
+    async def request(self, method, url, **kwargs) -> ClientResponse:
+        """Make a request."""
+        headers = kwargs.get('headers')
+
+        if headers is None:
+            headers = {}
+        else:
+            headers = dict(headers)
+
+        headers.update(await self.async_get_auth_headers())
+
+        return await self._websession.request(
+            method,
+            f"{self.host}{url}",
+            **kwargs,
+            headers=headers,
+        )
+
+
+class AlmondLocalAuth(AbstractAlmondAuth):
+    """Base class for talking to a local Almond API."""
+
+    async def async_get_auth_headers(self) -> dict:
+        """Get the request auth headers."""
+        return {"origin": "http://127.0.0.1:3000"}
+
+
+class AbstractAlmondWebAuth(AbstractAlmondAuth):
+    """Base class for talking to the Almond Web API."""
+
+    @abstractmethod
+    async def async_get_access_token(self):
+        """Return a valid access token."""
+
+    async def async_get_auth_headers(self) -> dict:
+        """Get the request auth headers."""
+        access_token = await self.async_get_access_token()
+        return {"Authorization": f"Bearer {access_token}"}
 
 
 class WebAlmondAPI:
@@ -55,16 +95,16 @@ class WebAlmondAPI:
 
     async def async_converse_text(self, text: str, conversation_id : str = None) -> dict:
         """Send a text message to Almond, and return Almond's reply."""
-        resp = await self.auth.post(
-            "/api/converse", json={"command": {"type": "command", "text": text}, "conversationId": conversation_id}
+        resp = await self.auth.request(
+            "post", "/api/converse", json={"command": {"type": "command", "text": text}, "conversationId": conversation_id}
         )
-
+        resp.raise_for_status()
         return await resp.json()
 
     async def async_converse_thingtalk(self, code: str, conversation_id : str = None) -> dict:
         """Send a program to Almond to be executed, and return Almond's reply."""
-        resp = await self.auth.post(
-            "/api/converse", json={"command": {"type": "tt", "code": code}, "conversationId": conversation_id}
+        resp = await self.auth.request(
+            "post", "/api/converse", json={"command": {"type": "tt", "code": code}, "conversationId": conversation_id}
         )
-
+        resp.raise_for_status()
         return await resp.json()
