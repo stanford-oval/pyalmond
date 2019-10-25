@@ -32,6 +32,7 @@ from pyalmond import WebAlmondAPI, AlmondLocalAuth
 
 import pytest
 
+
 @pytest.mark.asyncio
 async def test_simple():
     async with aiohttp.ClientSession() as client:
@@ -52,6 +53,7 @@ async def test_simple():
             }],
             "conversationId": "stateless"
         }
+
 
 @pytest.mark.asyncio
 async def test_apps():
