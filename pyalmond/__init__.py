@@ -93,15 +93,22 @@ class WebAlmondAPI:
         """Initialize the API."""
         self.auth = auth
 
-    async def async_converse_text(self, text: str, conversation_id : str = None) -> dict:
+    async def async_list_apps(self):
+        """List apps running in this Almond."""
+        resp = await self.auth.request("get", "/api/apps/list")
+        resp.raise_for_status()
+        return await resp.json()
+
+    async def async_converse_text(self, text: str, conversation_id: str = None) -> dict:
         """Send a text message to Almond, and return Almond's reply."""
         resp = await self.auth.request(
-            "post", "/api/converse", json={"command": {"type": "command", "text": text}, "conversationId": conversation_id}
+            "post", "/api/converse", json={"command": {"type": "command", "text": text},
+                                           "conversationId": conversation_id}
         )
         resp.raise_for_status()
         return await resp.json()
 
-    async def async_converse_thingtalk(self, code: str, conversation_id : str = None) -> dict:
+    async def async_converse_thingtalk(self, code: str, conversation_id: str = None) -> dict:
         """Send a program to Almond to be executed, and return Almond's reply."""
         resp = await self.auth.request(
             "post", "/api/converse", json={"command": {"type": "tt", "code": code}, "conversationId": conversation_id}

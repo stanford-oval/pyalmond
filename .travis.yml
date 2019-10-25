@@ -1,0 +1,16 @@
+branches:
+  except:
+  - "/^wip/"
+language: python
+python:
+- '3.6'
+services:
+- docker
+install:
+- pip install -r requirements.txt
+script:
+- ./travis/bootstrap.sh
+- flake8
+- pytest --cov pyalmond
+after_success:
+- coveralls
