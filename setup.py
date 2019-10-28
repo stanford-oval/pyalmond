@@ -35,7 +35,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="pyalmond",
-    version="0.0.1",
+    version="0.0.2",
     license="MIT",
     url="https://github.com/stanford-oval/pyalmond",
     author="Giovanni Campagna",
