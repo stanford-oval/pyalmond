@@ -62,3 +62,15 @@ async def test_apps():
         almond_api = WebAlmondAPI(auth)
 
         assert await almond_api.async_list_apps() == []
+
+
+@pytest.mark.asyncio
+async def test_devices():
+    async with aiohttp.ClientSession() as client:
+        auth = AlmondLocalAuth('http://127.0.0.1:3000', client)
+        almond_api = WebAlmondAPI(auth)
+
+        await almond_api.async_create_simple_device('com.xkcd')
+
+        devices = await almond_api.async_list_devices()
+        assert any(d['kind'] == 'com.xkcd' for d in devices)

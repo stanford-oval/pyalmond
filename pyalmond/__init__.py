@@ -99,6 +99,23 @@ class WebAlmondAPI:
         resp.raise_for_status()
         return await resp.json()
 
+    async def async_create_device(self, config):
+        """Configure a new device, by passing the full configuration dictionary"""
+        assert isinstance(config, dict) and 'kind' in config
+        resp = await self.auth.request("post", "/api/devices/create", json=config)
+        resp.raise_for_status()
+        return await resp.json()
+
+    async def async_create_simple_device(self, kind):
+        """Configure a new simple device that has no authentication, by passing only the Thingpedia ID"""
+        return await self.async_create_device(dict(kind=kind))
+
+    async def async_list_devices(self):
+        """List devices configured in this Almond."""
+        resp = await self.auth.request("get", "/api/devices/list")
+        resp.raise_for_status()
+        return await resp.json()
+
     async def async_converse_text(self, text: str, conversation_id: str = None) -> dict:
         """Send a text message to Almond, and return Almond's reply."""
         resp = await self.auth.request(
