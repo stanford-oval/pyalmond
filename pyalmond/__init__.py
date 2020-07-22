@@ -70,7 +70,7 @@ class AlmondLocalAuth(AbstractAlmondAuth):
 
     async def async_get_auth_headers(self) -> dict:
         """Get the request auth headers."""
-        return {"origin": "http://127.0.0.1:3000"}
+        return {"origin": self.host}
 
 
 class AbstractAlmondWebAuth(AbstractAlmondAuth):
